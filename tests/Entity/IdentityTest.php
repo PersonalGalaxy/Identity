@@ -10,8 +10,13 @@ use PersonalGalaxy\Identity\{
     Event\IdentityWasCreated,
     Event\IdentityWasDeleted,
     Event\Identity\PasswordWasChanged,
+    Event\Identity\TwoFactorAuthenticationWasEnabled,
+    Event\Identity\TwoFactorAuthenticationWasDisabled,
+    TwoFactorAuthentication\Code,
+    Exception\LogicException,
 };
 use Innmind\EventBus\ContainsRecordedEventsInterface;
+use ParagonIE\MultiFactor\OTP\OTPInterface;
 use PHPUnit\Framework\TestCase;
 use Eris\{
     Generator,
@@ -92,5 +97,41 @@ class IdentityTest extends TestCase
         $event = $identity->recordedEvents()->last();
         $this->assertInstanceOf(IdentityWasDeleted::class, $event);
         $this->assertSame($email, $event->email());
+    }
+
+    public function test2FA()
+    {
+        $identity = Identity::create(
+            $email = new Email('foo@bar.baz'),
+            new Password('foo')
+        );
+
+        $this->assertFalse($identity->twoFactorAuthenticationEnabled());
+        $this->assertSame($identity, $identity->enableTwoFactorAuthentication());
+        $this->assertTrue($identity->twoFactorAuthenticationEnabled());
+        $this->assertCount(2, $identity->recordedEvents());
+        $event = $identity->recordedEvents()->last();
+        $this->assertInstanceOf(TwoFactorAuthenticationWasEnabled::class, $event);
+        $this->assertSame($email, $event->email());
+
+        $otp = $this->createMock(OTPInterface::class);
+        $otp
+            ->expects($this->exactly(2))
+            ->method('getCode')
+            ->willReturn('foo');
+
+        $this->assertTrue($identity->validate(new Code('foo'), $otp));
+        $this->assertFalse($identity->validate(new Code('bar'), $otp));
+
+        $this->assertSame($identity, $identity->disableTwoFactorAuthentication());
+        $this->assertFalse($identity->twoFactorAuthenticationEnabled());
+        $this->assertCount(3, $identity->recordedEvents());
+        $event = $identity->recordedEvents()->last();
+        $this->assertInstanceOf(TwoFactorAuthenticationWasDisabled::class, $event);
+        $this->assertSame($email, $event->email());
+
+        $this->expectException(LogicException::class);
+
+        $identity->validate(new Code('foo'), $otp);
     }
 }
