@@ -36,7 +36,7 @@ class CreateIdentityHandlerTest extends TestCase
             ->method('add')
             ->with($this->callback(static function(Identity $identity) use ($command): bool {
                 return $identity->email() === $command->email() &&
-                    $identity->verify('foo') &&
+                    $identity->verifyPassword('foo') &&
                     $identity->recordedEvents()->first() instanceof IdentityWasCreated;
             }));
 

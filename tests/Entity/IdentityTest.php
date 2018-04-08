@@ -51,8 +51,8 @@ class IdentityTest extends TestCase
                     new Password($a)
                 );
 
-                $this->assertTrue($identity->verify($a));
-                $this->assertFalse($identity->verify($b));
+                $this->assertTrue($identity->verifyPassword($a));
+                $this->assertFalse($identity->verifyPassword($b));
             });
     }
 
@@ -75,8 +75,8 @@ class IdentityTest extends TestCase
                 $this->assertInstanceOf(PasswordWasChanged::class, $event);
                 $this->assertSame($email, $event->email());
 
-                $this->assertTrue($identity->verify($b));
-                $this->assertFalse($identity->verify($a));
+                $this->assertTrue($identity->verifyPassword($b));
+                $this->assertFalse($identity->verifyPassword($a));
             });
     }
 
