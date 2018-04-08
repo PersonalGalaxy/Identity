@@ -12,6 +12,7 @@ use PersonalGalaxy\Identity\{
     Event\Identity\PasswordWasChanged,
     Event\Identity\TwoFactorAuthenticationWasEnabled,
     Event\Identity\TwoFactorAuthenticationWasDisabled,
+    Event\Identity\RecoveryCodeWasUsed,
     Event\IdentityWasDeleted,
     TwoFactorAuthentication\Code,
     Exception\LogicException,
@@ -128,6 +129,7 @@ final class Identity implements ContainsRecordedEventsInterface
         }
 
         $this->recoveryCodes = $this->recoveryCodes->remove($codes->current());
+        $this->record(new RecoveryCodeWasUsed($this->email));
 
         return true;
     }

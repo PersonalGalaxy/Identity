@@ -13,6 +13,7 @@ use PersonalGalaxy\Identity\{
     Event\Identity\PasswordWasChanged,
     Event\Identity\TwoFactorAuthenticationWasEnabled,
     Event\Identity\TwoFactorAuthenticationWasDisabled,
+    Event\Identity\RecoveryCodeWasUsed,
     TwoFactorAuthentication\Code,
     Exception\LogicException,
 };
@@ -141,7 +142,7 @@ class IdentityTest extends TestCase
     public function testValidateTwoFactorCodeViaRecoveryCodes()
     {
         $identity = Identity::create(
-            new Email('foo@bar.baz'),
+            $email = new Email('foo@bar.baz'),
             new Password('foo')
         );
         $identity->enableTwoFactorAuthentication();
@@ -149,11 +150,20 @@ class IdentityTest extends TestCase
         $code = new Code((string) $recoveryCodes->current());
 
         $this->assertTrue($identity->validate($code));
+        $this->assertCount(3, $identity->recordedEvents());
+        $event = $identity->recordedEvents()->last();
+        $this->assertInstanceOf(RecoveryCodeWasUsed::class, $event);
+        $this->assertSame($email, $event->email());
+
         //assert a recovery code can be used only once
         $this->assertFalse($identity->validate($code));
         $recoveryCodes->next();
         $this->assertTrue($identity->validate(
             new Code((string) $recoveryCodes->current())
         ));
+        $this->assertCount(4, $identity->recordedEvents());
+        $event = $identity->recordedEvents()->last();
+        $this->assertInstanceOf(RecoveryCodeWasUsed::class, $event);
+        $this->assertSame($email, $event->email());
     }
 }
