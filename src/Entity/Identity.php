@@ -72,7 +72,7 @@ final class Identity implements ContainsRecordedEventsInterface
     public function enableTwoFactorAuthentication(): self
     {
         $this->secretKey = new SecretKey;
-        $this->record(new TwoFactorAuthenticationWasEnabled($this->email));
+        $this->record(new TwoFactorAuthenticationWasEnabled($this->email, $this->secretKey));
 
         return $this;
     }
