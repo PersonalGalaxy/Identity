@@ -2,8 +2,12 @@ language: php
 php:
     - 7.2
     - nightly
+before_install:
+    - sudo add-apt-repository ppa:ondrej/php -y
+    - sudo apt-get update -q
+    - sudo apt-get install libsodium-dev -y
 before_script:
-    - apt-get install libsodium13
+    - pecl install libsodium
     - composer install
 script: vendor/bin/phpunit --coverage-clover=coverage.clover
 after_script:
