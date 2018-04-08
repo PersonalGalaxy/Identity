@@ -34,6 +34,6 @@ class ChangePasswordHandlerTest extends TestCase
             ));
 
         $this->assertNull($handle($command));
-        $this->assertTrue($identity->verifyPassword('bar'));
+        $this->assertTrue($identity->verify('bar'));
     }
 }

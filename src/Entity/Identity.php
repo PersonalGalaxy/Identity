@@ -49,7 +49,7 @@ final class Identity implements ContainsRecordedEventsInterface
         return $this;
     }
 
-    public function verifyPassword(string $password): bool
+    public function verify(string $password): bool
     {
         return $this->password->verify($password);
     }
