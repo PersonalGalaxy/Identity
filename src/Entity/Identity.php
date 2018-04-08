@@ -34,6 +34,7 @@ final class Identity implements ContainsRecordedEventsInterface
     private $email;
     private $password;
     private $secretKey;
+    private $recoveryCodes;
 
     private function __construct(Email $email, Password $password)
     {
