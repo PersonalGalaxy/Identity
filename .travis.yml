@@ -3,8 +3,8 @@ php:
     - 7.2
     - nightly
 before_script:
+    - apt-get install libsodium13
     - composer install
-    - composer require paragonie/sodium_compat
 script: vendor/bin/phpunit --coverage-clover=coverage.clover
 after_script:
     - if [ "$TRAVIS_PHP_VERSION" != "nightly" ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
