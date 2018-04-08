@@ -7,6 +7,7 @@ use PersonalGalaxy\Identity\{
     Entity\Identity,
     Entity\Identity\Email,
     Entity\Identity\Password,
+    Entity\Identity\SecretKey,
     Event\IdentityWasCreated,
     Event\IdentityWasDeleted,
     Event\Identity\PasswordWasChanged,
@@ -113,6 +114,8 @@ class IdentityTest extends TestCase
         $event = $identity->recordedEvents()->last();
         $this->assertInstanceOf(TwoFactorAuthenticationWasEnabled::class, $event);
         $this->assertSame($email, $event->email());
+        $this->assertInstanceOf(SecretKey::class, $event->secretKey());
+        $this->assertCount(10, $event->recoveryCodes());
 
         $otp = $this->createMock(OTPInterface::class);
         $otp
@@ -133,5 +136,24 @@ class IdentityTest extends TestCase
         $this->expectException(LogicException::class);
 
         $identity->validate(new Code('foo'), $otp);
+    }
+
+    public function testValidateTwoFactorCodeViaRecoveryCodes()
+    {
+        $identity = Identity::create(
+            new Email('foo@bar.baz'),
+            new Password('foo')
+        );
+        $identity->enableTwoFactorAuthentication();
+        $recoveryCodes = $identity->recordedEvents()->last()->recoveryCodes();
+        $code = new Code((string) $recoveryCodes->current());
+
+        $this->assertTrue($identity->validate($code));
+        //assert a recovery code can be used only once
+        $this->assertFalse($identity->validate($code));
+        $recoveryCodes->next();
+        $this->assertTrue($identity->validate(
+            new Code((string) $recoveryCodes->current())
+        ));
     }
 }

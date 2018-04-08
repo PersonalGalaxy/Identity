@@ -7,6 +7,7 @@ use PersonalGalaxy\Identity\{
     Entity\Identity\Email,
     Entity\Identity\Password,
     Entity\Identity\SecretKey,
+    Entity\Identity\RecoveryCode,
     Event\IdentityWasCreated,
     Event\Identity\PasswordWasChanged,
     Event\Identity\TwoFactorAuthenticationWasEnabled,
@@ -19,6 +20,7 @@ use Innmind\EventBus\{
     ContainsRecordedEventsInterface,
     EventRecorder,
 };
+use Innmind\Immutable\Set;
 use ParagonIE\MultiFactor\{
     OTP\OTPInterface,
     FIDOU2F,
@@ -72,7 +74,24 @@ final class Identity implements ContainsRecordedEventsInterface
     public function enableTwoFactorAuthentication(): self
     {
         $this->secretKey = new SecretKey;
-        $this->record(new TwoFactorAuthenticationWasEnabled($this->email, $this->secretKey));
+        $this->recoveryCodes = Set::of(
+            RecoveryCode::class,
+            new RecoveryCode,
+            new RecoveryCode,
+            new RecoveryCode,
+            new RecoveryCode,
+            new RecoveryCode,
+            new RecoveryCode,
+            new RecoveryCode,
+            new RecoveryCode,
+            new RecoveryCode,
+            new RecoveryCode
+        );
+        $this->record(new TwoFactorAuthenticationWasEnabled(
+            $this->email,
+            $this->secretKey,
+            $this->recoveryCodes
+        ));
 
         return $this;
     }
@@ -80,6 +99,7 @@ final class Identity implements ContainsRecordedEventsInterface
     public function disableTwoFactorAuthentication(): self
     {
         $this->secretKey = null;
+        $this->recoveryCodes = null;
         $this->record(new TwoFactorAuthenticationWasDisabled($this->email));
 
         return $this;
@@ -93,7 +113,23 @@ final class Identity implements ContainsRecordedEventsInterface
 
         $factor = new FIDOU2F((string) $this->secretKey, $otp);
 
-        return $factor->validateCode((string) $code);
+        if ($factor->validateCode((string) $code)) {
+            return true;
+        }
+
+        $codes = $this
+            ->recoveryCodes
+            ->filter(static function(RecoveryCode $recoveryCode) use ($code): bool {
+                return $recoveryCode->equals($code);
+            });
+
+        if ($codes->size() === 0) {
+            return false;
+        }
+
+        $this->recoveryCodes = $this->recoveryCodes->remove($codes->current());
+
+        return true;
     }
 
     public function delete(): void
