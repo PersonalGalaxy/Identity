@@ -33,6 +33,9 @@ class PasswordTest extends TestCase
 
                 $this->assertTrue($password->verify($string));
                 $this->assertFalse($password->verify($junk));
+
+                $this->assertNotEmpty((string) $password);
+                $this->assertNotSame($string, (string) $password); // make sure the password is hashed
             });
     }
 
