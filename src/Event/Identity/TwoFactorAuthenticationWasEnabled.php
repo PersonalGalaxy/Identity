@@ -12,7 +12,7 @@ use Innmind\Immutable\SetInterface;
 
 final class TwoFactorAuthenticationWasEnabled
 {
-    private $email;
+    private $identity;
     private $secretKey;
     private $recoveryCodes;
 
