@@ -21,7 +21,7 @@ final class ChangePasswordHandler
     {
         $this
             ->repository
-            ->get($wished->email())
+            ->get($wished->identity())
             ->changePassword($wished->password());
     }
 }

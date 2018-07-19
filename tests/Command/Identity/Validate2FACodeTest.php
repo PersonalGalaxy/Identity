@@ -5,7 +5,7 @@ namespace Tests\PersonalGalaxy\Identity\Command\Identity;
 
 use PersonalGalaxy\Identity\{
     Command\Identity\Validate2FACode,
-    Entity\Identity\Email,
+    Entity\Identity\Identity,
     TwoFactorAuthentication\Code,
 };
 use PHPUnit\Framework\TestCase;
@@ -15,11 +15,11 @@ class Validate2FACodeTest extends TestCase
     public function testInterface()
     {
         $command = new Validate2FACode(
-            $email = new Email('foo@bar.baz'),
+            $identity = $this->createMock(Identity::class),
             $code = new Code('foo')
         );
 
-        $this->assertSame($email, $command->email());
+        $this->assertSame($identity, $command->identity());
         $this->assertSame($code, $command->code());
     }
 }

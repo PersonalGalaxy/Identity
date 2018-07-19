@@ -21,7 +21,7 @@ final class Disable2FAHandler
     {
         $this
             ->repository
-            ->get($wished->email())
+            ->get($wished->identity())
             ->disableTwoFactorAuthentication();
     }
 }

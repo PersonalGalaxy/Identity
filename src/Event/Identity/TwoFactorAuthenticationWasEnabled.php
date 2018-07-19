@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace PersonalGalaxy\Identity\Event\Identity;
 
 use PersonalGalaxy\Identity\Entity\Identity\{
-    Email,
+    Identity,
     SecretKey,
     RecoveryCode,
 };
@@ -12,12 +12,12 @@ use Innmind\Immutable\SetInterface;
 
 final class TwoFactorAuthenticationWasEnabled
 {
-    private $email;
+    private $identity;
     private $secretKey;
     private $recoveryCodes;
 
     public function __construct(
-        Email $email,
+        Identity $identity,
         SecretKey $secretKey,
         SetInterface $recoveryCodes
     ) {
@@ -28,14 +28,14 @@ final class TwoFactorAuthenticationWasEnabled
             ));
         }
 
-        $this->email = $email;
+        $this->identity = $identity;
         $this->secretKey = $secretKey;
         $this->recoveryCodes = $recoveryCodes;
     }
 
-    public function email(): Email
+    public function identity(): Identity
     {
-        return $this->email;
+        return $this->identity;
     }
 
     public function secretKey(): SecretKey

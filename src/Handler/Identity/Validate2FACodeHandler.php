@@ -20,7 +20,7 @@ final class Validate2FACodeHandler
 
     public function __invoke(Validate2FACode $wished): void
     {
-        $identity = $this->repository->get($wished->email());
+        $identity = $this->repository->get($wished->identity());
 
         if (!$identity->validate($wished->code())) {
             throw new Invalid2FACode($wished->code());

@@ -5,7 +5,7 @@ namespace Tests\PersonalGalaxy\Identity\Event\Identity;
 
 use PersonalGalaxy\Identity\{
     Event\Identity\PasswordWasChanged,
-    Entity\Identity\Email,
+    Entity\Identity\Identity,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -14,9 +14,9 @@ class PasswordWasChangedTest extends TestCase
     public function testInterface()
     {
         $event = new PasswordWasChanged(
-            $email = new Email('foo@bar.baz')
+            $identity = $this->createMock(Identity::class)
         );
 
-        $this->assertSame($email, $event->email());
+        $this->assertSame($identity, $event->identity());
     }
 }

@@ -24,12 +24,13 @@ class Validate2FACodeHandlerTest extends TestCase
             $repository = $this->createMock(IdentityRepository::class)
         );
         $identity = Identity::create(
+            $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
         $identity->enableTwoFactorAuthentication();
         $command = new Validate2FACode(
-            $identity->email(),
+            $identity->identity(),
             new Code(
                 (string) $identity
                     ->recordedEvents()
@@ -41,7 +42,7 @@ class Validate2FACodeHandlerTest extends TestCase
         $repository
             ->expects($this->once())
             ->method('get')
-            ->with($identity->email())
+            ->with($identity->identity())
             ->willReturn($identity);
 
         $this->assertNull($handle($command));
@@ -57,18 +58,19 @@ class Validate2FACodeHandlerTest extends TestCase
             $repository = $this->createMock(IdentityRepository::class)
         );
         $identity = Identity::create(
+            $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
         $identity->enableTwoFactorAuthentication();
         $command = new Validate2FACode(
-            $identity->email(),
+            $identity->identity(),
             new Code('foo')
         );
         $repository
             ->expects($this->once())
             ->method('get')
-            ->with($identity->email())
+            ->with($identity->identity())
             ->willReturn($identity);
 
         try {

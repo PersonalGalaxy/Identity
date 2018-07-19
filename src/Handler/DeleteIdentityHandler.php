@@ -19,8 +19,8 @@ final class DeleteIdentityHandler
 
     public function __invoke(DeleteIdentity $wished): void
     {
-        $identity = $this->repository->get($wished->email());
+        $identity = $this->repository->get($wished->identity());
         $identity->delete();
-        $this->repository->remove($identity->email());
+        $this->repository->remove($identity->identity());
     }
 }

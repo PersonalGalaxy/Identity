@@ -3,22 +3,22 @@ declare(strict_types = 1);
 
 namespace PersonalGalaxy\Identity\Command\Identity;
 
-use PersonalGalaxy\Identity\Entity\Identity\Email;
+use PersonalGalaxy\Identity\Entity\Identity\Identity;
 
 final class VerifyPassword
 {
-    private $email;
+    private $identity;
     private $password;
 
-    public function __construct(Email $email, string $password)
+    public function __construct(Identity $identity, string $password)
     {
-        $this->email = $email;
+        $this->identity = $identity;
         $this->password = $password;
     }
 
-    public function email(): Email
+    public function identity(): Identity
     {
-        return $this->email;
+        return $this->identity;
     }
 
     public function password(): string

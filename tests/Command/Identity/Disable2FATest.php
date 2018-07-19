@@ -5,7 +5,7 @@ namespace Tests\PersonalGalaxy\Identity\Command\Identity;
 
 use PersonalGalaxy\Identity\{
     Command\Identity\Disable2FA,
-    Entity\Identity\Email,
+    Entity\Identity\Identity,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -14,9 +14,9 @@ class Disable2FATest extends TestCase
     public function testInterface()
     {
         $command = new Disable2FA(
-            $email = new Email('foo@bar.baz')
+            $identity = $this->createMock(Identity::class)
         );
 
-        $this->assertSame($email, $command->email());
+        $this->assertSame($identity, $command->identity());
     }
 }

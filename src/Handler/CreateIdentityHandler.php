@@ -7,6 +7,7 @@ use PersonalGalaxy\Identity\{
     Command\CreateIdentity,
     Repository\IdentityRepository,
     Entity\Identity,
+    Specification\Identity\Email,
     Exception\IdentityAlreadyExist,
 };
 
@@ -21,12 +22,17 @@ final class CreateIdentityHandler
 
     public function __invoke(CreateIdentity $wished): void
     {
-        if ($this->repository->has($wished->email())) {
+        $identities = $this->repository->matching(
+            new Email($wished->email())
+        );
+
+        if ($identities->size() > 0) {
             throw new IdentityAlreadyExist($wished->email());
         }
 
         $this->repository->add(
             Identity::create(
+                $wished->identity(),
                 $wished->email(),
                 $wished->password()
             )

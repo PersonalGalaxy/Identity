@@ -5,7 +5,7 @@ namespace Tests\PersonalGalaxy\Identity\Event\Identity;
 
 use PersonalGalaxy\Identity\{
     Event\Identity\TwoFactorAuthenticationWasEnabled,
-    Entity\Identity\Email,
+    Entity\Identity\Identity,
     Entity\Identity\SecretKey,
     Entity\Identity\RecoveryCode,
 };
@@ -17,12 +17,12 @@ class TwoFactorAuthenticationWasEnabledTest extends TestCase
     public function testInterface()
     {
         $event = new TwoFactorAuthenticationWasEnabled(
-            $email = new Email('foo@bar.baz'),
+            $identity = $this->createMock(Identity::class),
             $secretKey = new SecretKey,
             $recoveryCodes = Set::of(RecoveryCode::class)
         );
 
-        $this->assertSame($email, $event->email());
+        $this->assertSame($identity, $event->identity());
         $this->assertSame($secretKey, $event->secretKey());
         $this->assertSame($recoveryCodes, $event->recoveryCodes());
     }
@@ -33,7 +33,7 @@ class TwoFactorAuthenticationWasEnabledTest extends TestCase
         $this->expectExceptionMessage('Argument 3 must be of type SetInterface<PersonalGalaxy\Identity\Entity\Identity\RecoveryCode>');
 
         $event = new TwoFactorAuthenticationWasEnabled(
-            new Email('foo@bar.baz'),
+            $this->createMock(Identity::class),
             new SecretKey,
             Set::of('string')
         );

@@ -11,7 +11,12 @@ use PersonalGalaxy\Identity\{
     Entity\Identity\Email,
     Entity\Identity\Password,
     Event\IdentityWasCreated,
+    Specification\Identity\Email as Spec,
     Exception\IdentityAlreadyExist,
+};
+use Innmind\Immutable\{
+    SetInterface,
+    Set,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -23,20 +28,22 @@ class CreateIdentityHandlerTest extends TestCase
             $repository = $this->createMock(IdentityRepository::class)
         );
         $command = new CreateIdentity(
+            $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
         $repository
             ->expects($this->once())
-            ->method('has')
-            ->with($command->email())
-            ->willReturn(false);
+            ->method('matching')
+            ->with(new Spec($command->email()))
+            ->willReturn(Set::of(Identity::class));
         $repository
             ->expects($this->once())
             ->method('add')
             ->with($this->callback(static function(Identity $identity) use ($command): bool {
-                return $identity->email() === $command->email() &&
-                    $identity->verify('foo') &&
+                return $identity->identity() === $command->identity() &&
+                    $identity->email() === $command->email() &&
+                    $identity->verify('foobarbaz') &&
                     $identity->recordedEvents()->first() instanceof IdentityWasCreated;
             }));
 
@@ -49,14 +56,19 @@ class CreateIdentityHandlerTest extends TestCase
             $repository = $this->createMock(IdentityRepository::class)
         );
         $command = new CreateIdentity(
+            $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
         $repository
             ->expects($this->once())
-            ->method('has')
-            ->with($command->email())
-            ->willReturn(true);
+            ->method('matching')
+            ->with(new Spec($command->email()))
+            ->willReturn($set = $this->createMock(SetInterface::class));
+        $set
+            ->expects($this->once())
+            ->method('size')
+            ->willReturn(1);
         $repository
             ->expects($this->never())
             ->method('add');
