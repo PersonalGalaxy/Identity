@@ -26,7 +26,7 @@ class Validate2FACodeHandlerTest extends TestCase
         $identity = Identity::create(
             $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
         $identity->enableTwoFactorAuthentication();
         $command = new Validate2FACode(
@@ -60,7 +60,7 @@ class Validate2FACodeHandlerTest extends TestCase
         $identity = Identity::create(
             $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
         $identity->enableTwoFactorAuthentication();
         $command = new Validate2FACode(

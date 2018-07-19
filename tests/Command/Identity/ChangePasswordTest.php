@@ -16,7 +16,7 @@ class ChangePasswordTest extends TestCase
     {
         $command = new ChangePassword(
             $identity = $this->createMock(Identity::class),
-            $password = new Password('foo')
+            $password = new Password('foobarbaz')
         );
 
         $this->assertSame($identity, $command->identity());

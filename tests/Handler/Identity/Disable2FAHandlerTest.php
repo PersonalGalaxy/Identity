@@ -30,7 +30,7 @@ class Disable2FAHandlerTest extends TestCase
             ->willReturn($identity = Identity::create(
                 $command->identity(),
                 new Email('foo@bar.baz'),
-                new Password('foo')
+                new Password('foobarbaz')
             ));
 
         $identity->enableTwoFactorAuthentication();

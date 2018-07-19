@@ -34,7 +34,7 @@ class IdentityTest extends TestCase
         $identity = Identity::create(
             $id = $this->createMock(Identity\Identity::class),
             $email = new Email('foo@bar.baz'),
-            $password = new Password('foo')
+            $password = new Password('foobarbaz')
         );
 
         $this->assertInstanceOf(Identity::class, $identity);
@@ -53,6 +53,10 @@ class IdentityTest extends TestCase
         $this
             ->forAll(Generator\string(), Generator\string())
             ->when(static function(string $a, string $b): bool {
+                if (strlen($a) < 8) {
+                    return false;
+                }
+
                 return $a !== $b;
             })
             ->then(function(string $a, string $b): void {
@@ -72,6 +76,14 @@ class IdentityTest extends TestCase
         $this
             ->forAll(Generator\string(), Generator\string())
             ->when(static function(string $a, string $b): bool {
+                if (strlen($a) < 8) {
+                    return false;
+                }
+
+                if (strlen($b) < 8) {
+                    return false;
+                }
+
                 return $a !== $b;
             })
             ->then(function(string $a, string $b): void {
@@ -97,7 +109,7 @@ class IdentityTest extends TestCase
         $identity = Identity::create(
             $id = $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
 
         $this->assertNull($identity->delete());
@@ -112,7 +124,7 @@ class IdentityTest extends TestCase
         $identity = Identity::create(
             $id = $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
 
         $this->assertFalse($identity->twoFactorAuthenticationEnabled());
@@ -151,7 +163,7 @@ class IdentityTest extends TestCase
         $identity = Identity::create(
             $id = $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
         $identity->enableTwoFactorAuthentication();
         $recoveryCodes = $identity->recordedEvents()->last()->recoveryCodes();

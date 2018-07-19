@@ -30,7 +30,7 @@ class CreateIdentityHandlerTest extends TestCase
         $command = new CreateIdentity(
             $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
         $repository
             ->expects($this->once())
@@ -43,7 +43,7 @@ class CreateIdentityHandlerTest extends TestCase
             ->with($this->callback(static function(Identity $identity) use ($command): bool {
                 return $identity->identity() === $command->identity() &&
                     $identity->email() === $command->email() &&
-                    $identity->verify('foo') &&
+                    $identity->verify('foobarbaz') &&
                     $identity->recordedEvents()->first() instanceof IdentityWasCreated;
             }));
 
@@ -58,7 +58,7 @@ class CreateIdentityHandlerTest extends TestCase
         $command = new CreateIdentity(
             $this->createMock(Identity\Identity::class),
             new Email('foo@bar.baz'),
-            new Password('foo')
+            new Password('foobarbaz')
         );
         $repository
             ->expects($this->once())

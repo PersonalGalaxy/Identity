@@ -23,7 +23,7 @@ class VerifyPasswordHandlerTest extends TestCase
         );
         $command = new VerifyPassword(
             $this->createMock(Identity\Identity::class),
-            'foo'
+            'foobarbaz'
         );
         $repository
             ->expects($this->once())
@@ -32,7 +32,7 @@ class VerifyPasswordHandlerTest extends TestCase
             ->willReturn($identity = Identity::create(
                 $command->identity(),
                 new Email('foo@bar.baz'),
-                new Password('foo')
+                new Password('foobarbaz')
             ));
 
         $this->assertNull($handle($command));
@@ -54,7 +54,7 @@ class VerifyPasswordHandlerTest extends TestCase
             ->willReturn($identity = Identity::create(
                 $command->identity(),
                 new Email('foo@bar.baz'),
-                new Password('foo')
+                new Password('foobarbaz')
             ));
 
         $this->expectException(InvalidPassword::class);

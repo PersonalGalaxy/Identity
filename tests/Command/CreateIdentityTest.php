@@ -18,7 +18,7 @@ class CreateIdentityTest extends TestCase
         $command = new CreateIdentity(
             $identity = $this->createMock(Identity::class),
             $email = new Email('foo@bar.baz'),
-            $password = new Password('foo')
+            $password = new Password('foobarbaz')
         );
 
         $this->assertSame($identity, $command->identity());

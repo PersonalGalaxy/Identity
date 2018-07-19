@@ -31,7 +31,7 @@ class DeleteIdentityHandlerTest extends TestCase
             ->willReturn($identity = Identity::create(
                 $command->identity(),
                 new Email('foo@bar.baz'),
-                new Password('foo')
+                new Password('foobarbaz')
             ));
         $repository
             ->expects($this->once())

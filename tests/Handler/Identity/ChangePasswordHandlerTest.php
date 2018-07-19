@@ -22,7 +22,7 @@ class ChangePasswordHandlerTest extends TestCase
         );
         $command = new ChangePassword(
             $this->createMock(Identity\Identity::class),
-            new Password('bar')
+            new Password('barbazfoo')
         );
         $repository
             ->expects($this->once())
@@ -31,10 +31,10 @@ class ChangePasswordHandlerTest extends TestCase
             ->willReturn($identity = Identity::create(
                 $command->identity(),
                 new Email('foo@bar.baz'),
-                new Password('foo')
+                new Password('foobarbaz')
             ));
 
         $this->assertNull($handle($command));
-        $this->assertTrue($identity->verify('bar'));
+        $this->assertTrue($identity->verify('barbazfoo'));
     }
 }
