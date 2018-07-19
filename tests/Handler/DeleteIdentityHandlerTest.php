@@ -22,20 +22,21 @@ class DeleteIdentityHandlerTest extends TestCase
             $repository = $this->createMock(IdentityRepository::class)
         );
         $command = new DeleteIdentity(
-            new Email('foo@bar.baz')
+            $this->createMock(Identity\Identity::class)
         );
         $repository
             ->expects($this->once())
             ->method('get')
-            ->with($command->email())
+            ->with($command->identity())
             ->willReturn($identity = Identity::create(
-                $command->email(),
+                $command->identity(),
+                new Email('foo@bar.baz'),
                 new Password('foo')
             ));
         $repository
             ->expects($this->once())
             ->method('remove')
-            ->with($identity->email());
+            ->with($identity->identity());
 
         $this->assertNull($handle($command));
         $this->assertInstanceOf(

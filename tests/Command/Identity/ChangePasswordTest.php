@@ -5,7 +5,7 @@ namespace Tests\PersonalGalaxy\Identity\Command\Identity;
 
 use PersonalGalaxy\Identity\{
     Command\Identity\ChangePassword,
-    Entity\Identity\Email,
+    Entity\Identity\Identity,
     Entity\Identity\Password,
 };
 use PHPUnit\Framework\TestCase;
@@ -15,11 +15,11 @@ class ChangePasswordTest extends TestCase
     public function testInterface()
     {
         $command = new ChangePassword(
-            $email = new Email('foo@bar.baz'),
+            $identity = $this->createMock(Identity::class),
             $password = new Password('foo')
         );
 
-        $this->assertSame($email, $command->email());
+        $this->assertSame($identity, $command->identity());
         $this->assertSame($password, $command->password());
     }
 }

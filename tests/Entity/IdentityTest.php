@@ -32,16 +32,19 @@ class IdentityTest extends TestCase
     public function testCreate()
     {
         $identity = Identity::create(
+            $id = $this->createMock(Identity\Identity::class),
             $email = new Email('foo@bar.baz'),
             $password = new Password('foo')
         );
 
         $this->assertInstanceOf(Identity::class, $identity);
         $this->assertInstanceOf(ContainsRecordedEventsInterface::class, $identity);
+        $this->assertSame($id, $identity->identity());
         $this->assertSame($email, $identity->email());
         $this->assertCount(1, $identity->recordedEvents());
         $event = $identity->recordedEvents()->first();
         $this->assertInstanceOf(IdentityWasCreated::class, $event);
+        $this->assertSame($id, $event->identity());
         $this->assertSame($email, $event->email());
     }
 
@@ -54,6 +57,7 @@ class IdentityTest extends TestCase
             })
             ->then(function(string $a, string $b): void {
                 $identity = Identity::create(
+                    $this->createMock(Identity\Identity::class),
                     new Email('foo@bar.baz'),
                     new Password($a)
                 );
@@ -72,7 +76,8 @@ class IdentityTest extends TestCase
             })
             ->then(function(string $a, string $b): void {
                 $identity = Identity::create(
-                    $email = new Email('foo@bar.baz'),
+                    $id = $this->createMock(Identity\Identity::class),
+                    new Email('foo@bar.baz'),
                     new Password($a)
                 );
 
@@ -80,7 +85,7 @@ class IdentityTest extends TestCase
                 $this->assertCount(2, $identity->recordedEvents());
                 $event = $identity->recordedEvents()->last();
                 $this->assertInstanceOf(PasswordWasChanged::class, $event);
-                $this->assertSame($email, $event->email());
+                $this->assertSame($id, $event->identity());
 
                 $this->assertTrue($identity->verify($b));
                 $this->assertFalse($identity->verify($a));
@@ -90,7 +95,8 @@ class IdentityTest extends TestCase
     public function testDelete()
     {
         $identity = Identity::create(
-            $email = new Email('foo@bar.baz'),
+            $id = $this->createMock(Identity\Identity::class),
+            new Email('foo@bar.baz'),
             new Password('foo')
         );
 
@@ -98,13 +104,14 @@ class IdentityTest extends TestCase
         $this->assertCount(2, $identity->recordedEvents());
         $event = $identity->recordedEvents()->last();
         $this->assertInstanceOf(IdentityWasDeleted::class, $event);
-        $this->assertSame($email, $event->email());
+        $this->assertSame($id, $event->identity());
     }
 
     public function test2FA()
     {
         $identity = Identity::create(
-            $email = new Email('foo@bar.baz'),
+            $id = $this->createMock(Identity\Identity::class),
+            new Email('foo@bar.baz'),
             new Password('foo')
         );
 
@@ -114,7 +121,7 @@ class IdentityTest extends TestCase
         $this->assertCount(2, $identity->recordedEvents());
         $event = $identity->recordedEvents()->last();
         $this->assertInstanceOf(TwoFactorAuthenticationWasEnabled::class, $event);
-        $this->assertSame($email, $event->email());
+        $this->assertSame($id, $event->identity());
         $this->assertInstanceOf(SecretKey::class, $event->secretKey());
         $this->assertCount(10, $event->recoveryCodes());
 
@@ -132,7 +139,7 @@ class IdentityTest extends TestCase
         $this->assertCount(3, $identity->recordedEvents());
         $event = $identity->recordedEvents()->last();
         $this->assertInstanceOf(TwoFactorAuthenticationWasDisabled::class, $event);
-        $this->assertSame($email, $event->email());
+        $this->assertSame($id, $event->identity());
 
         $this->expectException(LogicException::class);
 
@@ -142,7 +149,8 @@ class IdentityTest extends TestCase
     public function testValidateTwoFactorCodeViaRecoveryCodes()
     {
         $identity = Identity::create(
-            $email = new Email('foo@bar.baz'),
+            $id = $this->createMock(Identity\Identity::class),
+            new Email('foo@bar.baz'),
             new Password('foo')
         );
         $identity->enableTwoFactorAuthentication();
@@ -153,7 +161,7 @@ class IdentityTest extends TestCase
         $this->assertCount(3, $identity->recordedEvents());
         $event = $identity->recordedEvents()->last();
         $this->assertInstanceOf(RecoveryCodeWasUsed::class, $event);
-        $this->assertSame($email, $event->email());
+        $this->assertSame($id, $event->identity());
 
         //assert a recovery code can be used only once
         $this->assertFalse($identity->validate($code));
@@ -164,6 +172,6 @@ class IdentityTest extends TestCase
         $this->assertCount(4, $identity->recordedEvents());
         $event = $identity->recordedEvents()->last();
         $this->assertInstanceOf(RecoveryCodeWasUsed::class, $event);
-        $this->assertSame($email, $event->email());
+        $this->assertSame($id, $event->identity());
     }
 }

@@ -5,7 +5,7 @@ namespace Tests\PersonalGalaxy\Identity\Command\Identity;
 
 use PersonalGalaxy\Identity\{
     Command\Identity\VerifyPassword,
-    Entity\Identity\Email,
+    Entity\Identity\Identity,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -14,11 +14,11 @@ class VerifyPasswordTest extends TestCase
     public function testInterface()
     {
         $command = new VerifyPassword(
-            $email = new Email('foo@bar.baz'),
+            $identity = $this->createMock(Identity::class),
             $password = 'foo'
         );
 
-        $this->assertSame($email, $command->email());
+        $this->assertSame($identity, $command->identity());
         $this->assertSame($password, $command->password());
     }
 }

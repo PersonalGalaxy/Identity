@@ -5,7 +5,7 @@ namespace Tests\PersonalGalaxy\Identity\Command;
 
 use PersonalGalaxy\Identity\{
     Command\DeleteIdentity,
-    Entity\Identity\Email,
+    Entity\Identity\Identity,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -14,9 +14,9 @@ class DeleteIdentityTest extends TestCase
     public function testInterface()
     {
         $command = new DeleteIdentity(
-            $email = new Email('foo@bar.baz')
+            $identity = $this->createMock(Identity::class)
         );
 
-        $this->assertSame($email, $command->email());
+        $this->assertSame($identity, $command->identity());
     }
 }

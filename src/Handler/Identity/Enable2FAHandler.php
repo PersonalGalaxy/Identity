@@ -21,7 +21,7 @@ final class Enable2FAHandler
     {
         $this
             ->repository
-            ->get($wished->email())
+            ->get($wished->identity())
             ->enableTwoFactorAuthentication();
     }
 }

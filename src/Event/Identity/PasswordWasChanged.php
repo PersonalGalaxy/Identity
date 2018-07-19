@@ -3,19 +3,19 @@ declare(strict_types = 1);
 
 namespace PersonalGalaxy\Identity\Event\Identity;
 
-use PersonalGalaxy\Identity\Entity\Identity\Email;
+use PersonalGalaxy\Identity\Entity\Identity\Identity;
 
 final class PasswordWasChanged
 {
-    private $email;
+    private $identity;
 
-    public function __construct(Email $email)
+    public function __construct(Identity $identity)
     {
-        $this->email = $email;
+        $this->identity = $identity;
     }
 
-    public function email(): Email
+    public function identity(): Identity
     {
-        return $this->email;
+        return $this->identity;
     }
 }

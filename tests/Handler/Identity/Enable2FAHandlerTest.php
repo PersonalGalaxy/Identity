@@ -21,14 +21,15 @@ class Enable2FAHandlerTest extends TestCase
             $repository = $this->createMock(IdentityRepository::class)
         );
         $command = new Enable2FA(
-            new Email('foo@bar.baz')
+            $this->createMock(Identity\Identity::class)
         );
         $repository
             ->expects($this->once())
             ->method('get')
-            ->with($command->email())
+            ->with($command->identity())
             ->willReturn($identity = Identity::create(
-                $command->email(),
+                $command->identity(),
+                new Email('foo@bar.baz'),
                 new Password('foo')
             ));
 

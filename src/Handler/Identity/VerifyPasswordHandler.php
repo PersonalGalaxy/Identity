@@ -20,7 +20,7 @@ final class VerifyPasswordHandler
 
     public function __invoke(VerifyPassword $wished): void
     {
-        $identity = $this->repository->get($wished->email());
+        $identity = $this->repository->get($wished->identity());
 
         if (!$identity->verify($wished->password())) {
             throw new InvalidPassword;

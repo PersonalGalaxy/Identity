@@ -5,7 +5,7 @@ namespace Tests\PersonalGalaxy\Identity\Event;
 
 use PersonalGalaxy\Identity\{
     Event\IdentityWasDeleted,
-    Entity\Identity\Email,
+    Entity\Identity\Identity,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -14,9 +14,9 @@ class IdentityWasDeletedTest extends TestCase
     public function testInterface()
     {
         $event = new IdentityWasDeleted(
-            $email = new Email('foo@bar.baz')
+            $identity = $this->createMock(Identity::class)
         );
 
-        $this->assertSame($email, $event->email());
+        $this->assertSame($identity, $event->identity());
     }
 }
