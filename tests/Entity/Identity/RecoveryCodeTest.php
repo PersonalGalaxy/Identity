@@ -15,7 +15,7 @@ class RecoveryCodeTest extends TestCase
     {
         $code = new RecoveryCode;
 
-        $this->assertSame(16, strlen((string) $code));
+        $this->assertRegExp('~^[a-z0-9]{8}$~', (string) $code);
         $this->assertTrue($code->equals(new Code((string) $code)));
         $this->assertFalse($code->equals(new Code('foo')));
     }

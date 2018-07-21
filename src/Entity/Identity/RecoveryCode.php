@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace PersonalGalaxy\Identity\Entity\Identity;
 
 use PersonalGalaxy\Identity\TwoFactorAuthentication\Code;
+use Innmind\Immutable\Str;
 
 final class RecoveryCode
 {
@@ -11,7 +12,7 @@ final class RecoveryCode
 
     public function __construct()
     {
-        $this->value = random_bytes(16);
+        $this->value = (string) Str::of(bin2hex(random_bytes(16)))->substring(0, 8);
     }
 
     public function equals(Code $code): bool
