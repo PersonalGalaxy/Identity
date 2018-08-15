@@ -14,6 +14,7 @@ use PersonalGalaxy\Identity\{
     TwoFactorAuthentication\Code,
     Exception\Invalid2FACode,
 };
+use Innmind\TimeContinuum\TimeContinuumInterface;
 use PHPUnit\Framework\TestCase;
 
 class Validate2FACodeHandlerTest extends TestCase
@@ -21,7 +22,8 @@ class Validate2FACodeHandlerTest extends TestCase
     public function testInvokation()
     {
         $handle = new Validate2FACodeHandler(
-            $repository = $this->createMock(IdentityRepository::class)
+            $repository = $this->createMock(IdentityRepository::class),
+            $this->createMock(TimeContinuumInterface::class)
         );
         $identity = Identity::create(
             $this->createMock(Identity\Identity::class),
@@ -55,7 +57,8 @@ class Validate2FACodeHandlerTest extends TestCase
     public function testThrowWhenInvalidCode()
     {
         $handle = new Validate2FACodeHandler(
-            $repository = $this->createMock(IdentityRepository::class)
+            $repository = $this->createMock(IdentityRepository::class),
+            $this->createMock(TimeContinuumInterface::class)
         );
         $identity = Identity::create(
             $this->createMock(Identity\Identity::class),

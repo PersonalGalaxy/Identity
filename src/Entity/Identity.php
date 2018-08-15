@@ -21,9 +21,10 @@ use Innmind\EventBus\{
     ContainsRecordedEventsInterface,
     EventRecorder,
 };
+use Innmind\TimeContinuum\TimeContinuumInterface;
 use Innmind\Immutable\Set;
 use ParagonIE\MultiFactor\{
-    OTP\OTPInterface,
+    OTP\TOTP,
     FIDOU2F,
 };
 
@@ -120,15 +121,16 @@ final class Identity implements ContainsRecordedEventsInterface
         return $this;
     }
 
-    public function validate(Code $code, OTPInterface $otp = null): bool
+    public function validate(Code $code, TimeContinuumInterface $clock): bool
     {
         if (!$this->twoFactorAuthenticationEnabled()) {
             throw new LogicException;
         }
 
-        $factor = new FIDOU2F((string) $this->secretKey, $otp);
+        $factor = new FIDOU2F((string) $this->secretKey, new TOTP);
+        $time = $clock->now()->milliseconds();
 
-        if ($factor->validateCode((string) $code)) {
+        if ($factor->validateCode((string) $code, $time)) {
             return true;
         }
 
