@@ -19,7 +19,8 @@
         "innmind/event-bus": "^2.1",
         "innmind/immutable": "^2.8",
         "innmind/specification": "^1.0",
-        "paragonie/multi-factor": "^0.2.2"
+        "paragonie/multi-factor": "^0.2.2",
+        "innmind/time-continuum": "^1.2"
     },
     "autoload": {
         "psr-4": {

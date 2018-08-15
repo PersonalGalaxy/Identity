@@ -18,7 +18,11 @@ use PersonalGalaxy\Identity\{
     Exception\LogicException,
 };
 use Innmind\EventBus\ContainsRecordedEventsInterface;
-use ParagonIE\MultiFactor\OTP\OTPInterface;
+use Innmind\TimeContinuum\{
+    TimeContinuumInterface,
+    PointInTime\Earth\PointInTime,
+};
+use ParagonIE\MultiFactor\OTP\TOTP;
 use PHPUnit\Framework\TestCase;
 use Eris\{
     Generator,
@@ -74,6 +78,7 @@ class IdentityTest extends TestCase
     public function testChangePassword()
     {
         $this
+            ->minimumEvaluationRatio(0.2)
             ->forAll(Generator\string(), Generator\string())
             ->when(static function(string $a, string $b): bool {
                 if (strlen($a) < 8) {
@@ -137,14 +142,16 @@ class IdentityTest extends TestCase
         $this->assertInstanceOf(SecretKey::class, $event->secretKey());
         $this->assertCount(10, $event->recoveryCodes());
 
-        $otp = $this->createMock(OTPInterface::class);
-        $otp
-            ->expects($this->exactly(2))
-            ->method('getCode')
-            ->willReturn('foo');
+        $clock = $this->createMock(TimeContinuumInterface::class);
+        $clock
+            ->expects($this->any())
+            ->method('now')
+            ->willReturn($now = new PointInTime('2018-01-01T00:00:00+0200'));
+        $otp = new TOTP;
+        $validCode = $otp->getCode((string) $event->secretKey(), $now->milliseconds());
 
-        $this->assertTrue($identity->validate(new Code('foo'), $otp));
-        $this->assertFalse($identity->validate(new Code('bar'), $otp));
+        $this->assertTrue($identity->validate(new Code($validCode), $clock));
+        $this->assertFalse($identity->validate(new Code('271507'), $clock));
 
         $this->assertSame($identity, $identity->disableTwoFactorAuthentication());
         $this->assertFalse($identity->twoFactorAuthenticationEnabled());
@@ -155,7 +162,7 @@ class IdentityTest extends TestCase
 
         $this->expectException(LogicException::class);
 
-        $identity->validate(new Code('foo'), $otp);
+        $identity->validate(new Code($validCode), $clock);
     }
 
     public function testValidateTwoFactorCodeViaRecoveryCodes()
@@ -169,17 +176,24 @@ class IdentityTest extends TestCase
         $recoveryCodes = $identity->recordedEvents()->last()->recoveryCodes();
         $code = new Code((string) $recoveryCodes->current());
 
-        $this->assertTrue($identity->validate($code));
+        $clock = $this->createMock(TimeContinuumInterface::class);
+        $clock
+            ->expects($this->any())
+            ->method('now')
+            ->willReturn(new PointInTime('2018-01-01T00:00:00+0200'));
+
+        $this->assertTrue($identity->validate($code, $clock));
         $this->assertCount(3, $identity->recordedEvents());
         $event = $identity->recordedEvents()->last();
         $this->assertInstanceOf(RecoveryCodeWasUsed::class, $event);
         $this->assertSame($id, $event->identity());
 
         //assert a recovery code can be used only once
-        $this->assertFalse($identity->validate($code));
+        $this->assertFalse($identity->validate($code, $clock));
         $recoveryCodes->next();
         $this->assertTrue($identity->validate(
-            new Code((string) $recoveryCodes->current())
+            new Code((string) $recoveryCodes->current()),
+            $clock
         ));
         $this->assertCount(4, $identity->recordedEvents());
         $event = $identity->recordedEvents()->last();
