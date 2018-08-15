@@ -74,6 +74,7 @@ class IdentityTest extends TestCase
     public function testChangePassword()
     {
         $this
+            ->minimumEvaluationRatio(0.2)
             ->forAll(Generator\string(), Generator\string())
             ->when(static function(string $a, string $b): bool {
                 if (strlen($a) < 8) {
