@@ -128,7 +128,7 @@ final class Identity implements ContainsRecordedEventsInterface
         }
 
         $factor = new FIDOU2F((string) $this->secretKey, new TOTP);
-        $time = $clock->now()->milliseconds();
+        $time = (int) ($clock->now()->milliseconds() / 1000);
 
         if ($factor->validateCode((string) $code, $time)) {
             return true;

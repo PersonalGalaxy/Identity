@@ -148,7 +148,8 @@ class IdentityTest extends TestCase
             ->method('now')
             ->willReturn($now = new PointInTime('2018-01-01T00:00:00+0200'));
         $otp = new TOTP;
-        $validCode = $otp->getCode((string) $event->secretKey(), $now->milliseconds());
+        $time = (int) ($now->milliseconds() / 1000);
+        $validCode = $otp->getCode((string) $event->secretKey(), $time);
 
         $this->assertTrue($identity->validate(new Code($validCode), $clock));
         $this->assertFalse($identity->validate(new Code('271507'), $clock));
