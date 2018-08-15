@@ -9,7 +9,7 @@ final class SecretKey
 
     public function __construct()
     {
-        $this->value = random_bytes(20);
+        $this->value = \bin2hex(\random_bytes(20));
     }
 
     public function __toString(): string

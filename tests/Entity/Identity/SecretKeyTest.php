@@ -12,6 +12,6 @@ class SecretKeyTest extends TestCase
     {
         $secret = new SecretKey;
 
-        $this->assertSame(20, strlen((string) $secret));
+        $this->assertSame(40, strlen((string) $secret));
     }
 }
